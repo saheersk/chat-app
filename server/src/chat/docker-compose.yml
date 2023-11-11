@@ -1,0 +1,27 @@
+version: "3.8"
+services:
+  #Postgres Database
+  postgres_db:
+    image: postgres:16
+    container_name: postgres_container
+    environment:
+      POSTGRES_DB: chat_db
+      POSTGRES_USER: chat_user
+      POSTGRES_PASSWORD: chat_user123
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  #Django Appication
+  app:
+    build: .
+    volumes:
+      - .:/chat
+    ports:
+      - 8000:8000
+    image: app:chat
+    container_name: chat_container
+    depends_on:
+      - postgres_db
+
+volumes:
+  postgres_data:

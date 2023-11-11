@@ -1,0 +1,22 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+* {
+  margin: 0;
+  padding: 0;
+}
+.person-container::-webkit-scrollbar,
+.chat-screen .messages::-webkit-scrollbar {
+  width: 0.4rem; 
+}
+
+.person-container::-webkit-scrollbar-thumb,
+.chat-screen .messages::-webkit-scrollbar-thumb {
+  background-color: transparent;
+}
+
+.person-container::-webkit-scrollbar-track,
+.chat-screen .messages::-webkit-scrollbar-track {
+  background: transparent;
+}
