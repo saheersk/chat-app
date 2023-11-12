@@ -1,5 +1,11 @@
 version: "3.8"
 services:
+  redis:
+      image: redis:latest 
+      container_name: redis_chat_container
+      volumes:
+        - redis_chat_data:/data
+
   #Postgres Database
   postgres_db:
     image: postgres:16
@@ -9,19 +15,26 @@ services:
       POSTGRES_USER: chat_user
       POSTGRES_PASSWORD: chat_user123
     volumes:
-      - postgres_data:/var/lib/postgresql/data
+      - postgres_chat_data:/var/lib/postgresql/data
 
   #Django Appication
-  app:
-    build: .
-    volumes:
-      - .:/chat
+  backend:
+    build: 
+      context: .
+      dockerfile: Dockerfile
+    image: backend:chat-backend
+    container_name: chat_backend_container
+    command: sh -c "chmod +x /chat-backend/migrate.sh && chmod +x /chat-backend/entrypoint.sh  && sh /chat-backend/migrate.sh && /chat-backend/entrypoint.sh"
     ports:
       - 8000:8000
-    image: app:chat
-    container_name: chat_container
+    env_file:
+      - .env
+    volumes:
+      - .:/chat-bakcend
     depends_on:
       - postgres_db
 
 volumes:
-  postgres_data:
+  backend_data:
+  postgres_chat_data:
+  redis_chat_data:
