@@ -1,0 +1,31 @@
+# Ignore virtual environment
+venv/
+
+# Ignore database file
+db.sqlite3
+
+# Ignore compiled Python files
+__pycache__/
+
+# Ignore log files
+*.log
+
+# Ignore secret settings (e.g., local settings with sensitive data)
+.env
+
+# Ignore media and static files
+media/
+static/
+
+# Ignore IDE-specific files and directories
+.vscode/
+.idea/
+
+# Ignore local development files
+*.swp
+
+# Ignore macOS-specific .DS_Store files
+.DS_Store
+
+# Ignore Python bytecode files
+*.pyc
