@@ -37,6 +37,7 @@ INSTALLED_APPS = [
 
     'user_auth',
     'communication',
+    'customer'
 ]
 
 MIDDLEWARE = [
@@ -140,7 +141,7 @@ CHANNEL_LAYERS = {
     'default': {
         'BACKEND': 'channels_redis.core.RedisChannelLayer',
         'CONFIG': {
-            "hosts": [(config('REDIS_HOST', default='localhost'), config('REDIS_PORT', default='6379'))],
+            "hosts": [(config('REDIS_HOST', default='redis'), config('REDIS_PORT', default='6379'))],
         },
     },
 }
