@@ -1,12 +1,16 @@
-from django.db import models
+import uuid
 
+from django.db import models
 
 from user_auth.models import User
 
 
 class AddedList(models.Model):
+    # id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     first_person = models.ForeignKey(User, on_delete=models.CASCADE, null=True, blank=True, related_name='first_person')
     second_person = models.ForeignKey(User, on_delete=models.CASCADE, null=True, blank=True, related_name='second_person')
+    first_person_public_key = models.TextField(blank=True, null=True)
+    second_person_public_key = models.TextField(blank=True, null=True)
     updated = models.DateTimeField(auto_now=True)
     timestamp = models.DateTimeField(auto_now_add=True)
     
@@ -15,6 +19,15 @@ class AddedList(models.Model):
 
     def __str__(self):
         return self.first_person.username
+    
+    def save(self, *args, **kwargs):
+        if not self.first_person_public_key:
+            self.first_person_public_key = self.first_person.public_key
+
+        if not self.second_person_public_key:
+            self.second_person_public_key = self.second_person.public_key
+
+        super().save(*args, **kwargs)
 
 
 class ChatMessage(models.Model):
