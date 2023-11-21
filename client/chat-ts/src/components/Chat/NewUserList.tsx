@@ -5,7 +5,7 @@ import type { MembersReducer, UserReducer, UsersListReducer } from "../../store/
 import { TokenInfo } from "../../features/auth/userSlice";
 import { BASE_URL } from "../../../axiosConfig";
 import { addToUserList, type UserList } from "../../features/user/UserListSlice";
-import { User } from "../../features/chatList/ChatSlice";
+import { User, updateList } from "../../features/chatList/ChatSlice";
 
 function NewUserList() {
     const dispatch = useDispatch();
@@ -47,24 +47,22 @@ function NewUserList() {
                 },
             })
             .then((response: AxiosResponse) => {
-                console.log(response.data.users, "users response");
 
                 const userListArray = response.data.users.map((user: any) => user);
                 const ArrayList = list.map((user: any) => user.members.username);
 
                 userListArray.filter((item: any) => {
                     if (ArrayList.includes(item.username)) {
-                        console.log(item, "username");
                     } else {
-                        console.log(item, "else username");
                         setUserToAdd((prevUserToAdd) => [...prevUserToAdd, item]);
                     }
                 });
+
             })
             .catch((err: AxiosError) => {
                 console.log(err);
             });
-    }, []);
+    }, [userList]);
 
     useEffect(() => {
         if (userToAdd.length > 0) {

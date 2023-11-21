@@ -9,6 +9,7 @@ export type TokenInfo = {
     };
     username: string
     user_id: number;
+    private_key: string;
   };
 
 type UserPayload = {

@@ -23,7 +23,6 @@ const UserListSlice = createSlice({
     initialState,
     reducers: {
         addToUserList: (state, action: UserActionType ) => {
-
             state.users = action.payload
           },
     }
