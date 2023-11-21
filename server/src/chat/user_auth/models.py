@@ -18,10 +18,8 @@ class User(AbstractUser):
     
     def save(self, *args, **kwargs):
         if not self.public_key or not self.private_key:
-            # Generate RSA key pair
             key = RSA.generate(2048)
 
-            # Get public and private keys as strings
             public_key = key.publickey().export_key().decode()
             private_key = key.export_key().decode()
 

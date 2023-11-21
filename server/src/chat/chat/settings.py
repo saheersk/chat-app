@@ -34,11 +34,17 @@ INSTALLED_APPS = [
     'rest_framework',
     'rest_framework_simplejwt',
     'channels',
+    'corsheaders',
 
     'user_auth',
     'communication',
     'customer'
 ]
+
+CORS_ORIGIN_WHITELIST = ["http://localhost:5173",]
+CORS_ORIGIN_ALLOW_ALL = True
+CORS_ALLOW_METHODS = ('GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS')
+CORS_ALLOW_HEADERS = ('content-type', 'authorization', 'upgrade', 'sec-websocket-key', 'sec-websocket-protocol')
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -48,6 +54,8 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+
+    'corsheaders.middleware.CorsMiddleware', 
 ]
 
 ROOT_URLCONF = 'chat.urls'
@@ -154,17 +162,12 @@ REST_FRAMEWORK = {
 
 # Configure JWT settings
 SIMPLE_JWT = {
-    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=60),
+    'ACCESS_TOKEN_LIFETIME': timedelta(days=1),
     'SLIDING_TOKEN_REFRESH_LIFETIME': timedelta(days=1),
     'SLIDING_TOKEN_LIFETIME': timedelta(days=30),
     'SLIDING_TOKEN_LIFETIME_REFRESH': timedelta(days=60),
     'SLIDING_TOKEN_REFRESH_LIFETIME_SLIDING': timedelta(days=90),
     'ALGORITHM': 'HS256',
-    'SIGNING_KEY': config('DJANGO_SECRET_KEY'),
-    'SLIDING_TOKEN_REFRESH_LIFETIME': timedelta(days=1),
-    'SLIDING_TOKEN_LIFETIME': timedelta(days=30),
-    'SLIDING_TOKEN_LIFETIME_REFRESH': timedelta(days=60),
-    'SLIDING_TOKEN_REFRESH_LIFETIME_SLIDING': timedelta(days=90),
     'SIGNING_KEY': config('DJANGO_SECRET_KEY'),
     'VERIFYING_KEY': None,
     'AUTH_HEADER_TYPES': ('Bearer',),

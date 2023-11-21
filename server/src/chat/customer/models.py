@@ -6,7 +6,6 @@ from user_auth.models import User
 
 
 class AddedList(models.Model):
-    # id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     first_person = models.ForeignKey(User, on_delete=models.CASCADE, null=True, blank=True, related_name='first_person')
     second_person = models.ForeignKey(User, on_delete=models.CASCADE, null=True, blank=True, related_name='second_person')
     first_person_public_key = models.TextField(blank=True, null=True)

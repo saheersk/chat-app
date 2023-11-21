@@ -41,7 +41,10 @@ class Login(APIView):
                 'token': {
                     'refresh': str(refresh),
                     'access': str(refresh.access_token)
-                }
+                },
+                'username': request.user.username,
+                "user_id": request.user.id,
+                "private_key": request.user.private_key
             }, status = status.HTTP_200_OK)
 
 
@@ -66,3 +69,4 @@ class Register(APIView):
                 'status': True,
                 'message': 'user created successfully'
             },status = status.HTTP_201_CREATED)
+    

@@ -9,13 +9,19 @@ from user_auth.models import User
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = ['id', 'username']
+        fields = ['id', 'username', 'public_key']
 
+
+class UserPublicSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = ['id', 'public_key']
 
 class MemberSerializer(serializers.ModelSerializer):
+    public_key = UserPublicSerializer()
     class Meta:
         model = AddedList
-        fields = ['id', 'first_person', 'second_person']
+        fields = ['id', 'first_person', 'second_person', 'public_key']
 
     def validate(self, data):
         first_user = data.get('first_person')
@@ -31,15 +37,16 @@ class MemberSerializer(serializers.ModelSerializer):
 
 
 class ChatMessageSerializer(serializers.ModelSerializer):
+    user = UserSerializer()
     class Meta:
         model = ChatMessage
-        fields = ['thread', 'user', 'message', 'is_read', 'is_delivered']
+        fields = ['id', 'thread', 'user', 'message', 'is_read', 'is_delivered']
 
 
 class GroupChatSerializer(serializers.ModelSerializer):
     class Meta:
         model = GroupChat
-        fields = ['name', 'members']
+        fields = ['id', 'name', 'members']
 
     def create(self, validated_data):
         print("Creating group with data:", validated_data)
@@ -70,7 +77,7 @@ class GroupChatListSerializer(serializers.ModelSerializer):
     members = UserSerializer(many=True)
     class Meta:
         model = GroupChat
-        fields = ['name', 'members']
+        fields = ['id', 'name', 'members']
 
 
 class GroupChatMessageSerializer(serializers.ModelSerializer):
