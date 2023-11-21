@@ -3,7 +3,7 @@
 cd /chat-backend/ || exit
 
 # Apply database migrations
-python manage.py migrate
-python manage.py collectstatic
+python manage.py migrate --noinput
+# python manage.py collectstatic --noinput
 
 
