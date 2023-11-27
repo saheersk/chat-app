@@ -9,7 +9,13 @@ from user_auth.models import User
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = ['id', 'username', 'public_key']
+        fields = ['id', 'username']
+
+
+class UserProfileSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = ['image', 'username', 'email', 'first_name', 'last_name']
 
 
 class UserPublicSerializer(serializers.ModelSerializer):
@@ -18,10 +24,9 @@ class UserPublicSerializer(serializers.ModelSerializer):
         fields = ['id', 'public_key']
 
 class MemberSerializer(serializers.ModelSerializer):
-    public_key = UserPublicSerializer()
     class Meta:
         model = AddedList
-        fields = ['id', 'first_person', 'second_person', 'public_key']
+        fields = ['id', 'first_person', 'second_person']
 
     def validate(self, data):
         first_user = data.get('first_person')

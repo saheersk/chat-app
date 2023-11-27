@@ -9,7 +9,7 @@ import asyncio
 from rest_framework_simplejwt.tokens import AccessToken
 
 from user_auth.models import User
-from customer.models import ChatMessage, AddedList
+from customer.models import ChatMessage, AddedList, Notification
 
 from urllib.parse import parse_qs
 
@@ -89,26 +89,32 @@ class ChatConsumer(AsyncWebsocketConsumer):
         sender, receiver = await self.get_users(sender_id, list_id)
 
         if sender and receiver:
-            await self.save_message(sender, list_id, message)
+            chat = await self.save_message(sender, list_id, message)
 
             await self.channel_layer.group_send(
                 self.room_group_name, {
                     "type": "chat.message",
+                    "id": chat,
+                    "thread": list_id,
+                    "user": {
+                        "id": sender_id,
+                        "username": sender.username
+                    },
                     "message": message,
-                    "sender": sender.id,
-                    "sender_name": sender.username,
-                    "receiver": receiver.id,
-                    "receiver_name": receiver.username,
+                    "is_read": False,
+                    "is_delivered": False
                 }
             )
 
             print('notify_user')
-            await self.notify_user(receiver.id, "new_message", {"sender_id": sender.id, 'list_id': list_id, "sender_name": sender.username, "message": message})
+            await self.notify_user(receiver.id, "new_message", {"sender_id": sender.id, "receiver_id": receiver.id, 'list_id': list_id, "sender_name": sender.username, "message": message})
 
 
     async def notify_user(self, user_id, notification_type, data):
         user_channel_name = f"notification_{user_id}"
         channel_layer = get_channel_layer()
+
+        await self.save_notification(data)
 
         await channel_layer.group_send(
             user_channel_name,
@@ -121,21 +127,24 @@ class ChatConsumer(AsyncWebsocketConsumer):
 
 
     async def chat_message(self, event):
+        chat = event["id"]
+        thread = event["thread"]
         message = event["message"]
-        sender = event.get("sender", "")
-        receiver = event.get("receiver", "")
-        sender_name = event.get("sender_name", "")
-        receiver_name = event.get("receiver_name", "")
+        sender = event.get("user", "")
 
         if self.scope['user'].id == sender:
             return
 
         await self.send(text_data=json.dumps({
-            "sender": sender, 
-            "sender_name": sender_name,
-            "message": message, 
-            "receiver": receiver, 
-            "receiver_name": receiver_name,
+                "id": chat,
+                "thread": thread,
+                "user": {
+                    "id": sender['id'],
+                    "username": sender['username']
+                },
+                "message": message,
+                "is_read": False,
+                "is_delivered": False
             }))
 
     @database_sync_to_async
@@ -168,6 +177,22 @@ class ChatConsumer(AsyncWebsocketConsumer):
             users_list = AddedList.objects.get(id=list_record)
             room = ChatMessage.objects.create(thread=users_list, user=sender, message=message)
             room.save()
+            return room.id
+        except Exception as e:
+            print(f"Error saving message: {e}")
+
+    @database_sync_to_async
+    def save_notification(self, data):
+        sender = data['sender_id']
+        receiver = data['receiver_id']
+        thread = data['list_id']
+        message = data['message']
+        try:
+            added_list = AddedList.objects.get(id=thread)
+            sender_info = User.objects.get(id=sender)
+            receiver_info = User.objects.get(id=receiver)
+            new_notification = Notification.objects.create(sender_info=sender_info, receiver_info=receiver_info, message=message, thread=added_list)
+            new_notification.save()
         except Exception as e:
             print(f"Error saving message: {e}")
 
@@ -208,6 +233,11 @@ class NotificationConsumer(AsyncWebsocketConsumer):
         notification_type = event["notification_type"]
         data = event["data"]
 
-        await self.send(text_data=json.dumps({"notification_type": notification_type, "data": data}))
+        try:
+            await self.send(text_data=json.dumps({"notification_type": notification_type, "data": data}))
+            print("Message sent successfully")
+        except Exception as e:
+            print(f"Failed to send message: {e}")
+
 
     

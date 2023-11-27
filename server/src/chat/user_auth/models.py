@@ -10,6 +10,7 @@ class User(AbstractUser):
     is_blocked = models.BooleanField(default=False)
     public_key = models.TextField(blank=True, null=True)
     private_key = models.TextField(blank=True, null=True)
+    image = models.ImageField(upload_to="profile/image", blank=True, null=True)
 
     REQUIRED_FIELDS = ['first_name', 'last_name', 'phone_number']
 

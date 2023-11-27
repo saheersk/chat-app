@@ -5,7 +5,6 @@ export interface User {
     members: {
         id: number;
         username: string;
-        public_key: string;
     }
 }
 
@@ -29,13 +28,15 @@ const ChatSlice = createSlice({
         addToList: (state, action: ActionType ) => {
             state.list = action.payload
           },
-        removeFromList: (state, action) => {},
+        removeFromList: (state, action) => {
+            state.list =  state.list.filter((list) => list.id !== action.payload)
+        },
         updateList: (state, action) => {
-            state.list = action.payload.list;
-          },
+            state.list = [...state.list, action.payload];
+        },
     }
 });
 
-export const { addToList, updateList } = ChatSlice.actions;
+export const { addToList, updateList, removeFromList } = ChatSlice.actions;
 
 export default ChatSlice.reducer;

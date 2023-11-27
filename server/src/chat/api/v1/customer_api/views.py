@@ -6,9 +6,9 @@ from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.decorators import  permission_classes
 from rest_framework.permissions import IsAuthenticated
-from rest_framework.generics import ListAPIView
+from rest_framework.generics import ListAPIView, DestroyAPIView, UpdateAPIView
 
-from api.v1.customer_api.serializers import MemberSerializer, ChatMessageSerializer, UserSerializer, GroupChatSerializer, GroupChatListSerializer, GroupChatMessageSerializer
+from api.v1.customer_api.serializers import MemberSerializer, ChatMessageSerializer, UserSerializer, GroupChatSerializer, GroupChatListSerializer, GroupChatMessageSerializer, UserProfileSerializer
 from customer.models import AddedList, ChatMessage, GroupChatMessage, GroupChat
 from user_auth.models import User
 
@@ -28,10 +28,20 @@ class MemberList(ListAPIView):
         
         serializer.save()
 
+        second_person = serializer.validated_data.get('second_person')
+        first_person = serializer.validated_data.get('first_person')
+        member = AddedList.objects.get(first_person=first_person, second_person=second_person)
+
+        new_data = {
+            'id': member.id,  
+            'members': UserSerializer(member.second_person).data,
+        }
+
         return Response({
-                'status': True,
-                'message': 'New member created successfully'
-            }, status=status.HTTP_201_CREATED)
+            'status': True,
+            'message': 'New member created successfully',
+            'data': new_data
+        }, status=status.HTTP_201_CREATED)
     
     def get(self, request):
         members = AddedList.objects.filter(
@@ -49,7 +59,17 @@ class MemberList(ListAPIView):
             'members': other_user_data
         }, status=status.HTTP_200_OK)
 
-    
+
+
+class MemberRemove(DestroyAPIView):
+    permission_classes = [IsAuthenticated]
+
+    def destroy(self, request, *args, **kwargs):
+        member_id = kwargs.get('id')
+        instance = AddedList.objects.get(id=member_id)
+        self.perform_destroy(instance)
+
+        return Response({'status': True, 'message': 'Member deleted successfully'}, status=status.HTTP_204_NO_CONTENT)
 
 
 @permission_classes([IsAuthenticated])
@@ -64,7 +84,6 @@ class ChatMessages(APIView):
         return Response({
             'chat_messages': serializer.data
         }, status=status.HTTP_200_OK)
-    
 
 @permission_classes([IsAuthenticated])
 class GroupChatList(APIView):
@@ -122,3 +141,31 @@ class UserList(ListAPIView):
         return Response({
             'users': serializer.data
         }, status=status.HTTP_200_OK)
+    
+
+class ProfileView(ListAPIView, UpdateAPIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request, *args, **kwargs):
+        users = User.objects.get(id=request.user.id)
+        serializer = UserProfileSerializer(users)
+        return Response({
+            'users': serializer.data
+        }, status=status.HTTP_200_OK)
+
+    def put(self, request, *args, **kwargs):
+        user = User.objects.get(id=request.user.id)
+        serializer = UserProfileSerializer(user, data=request.data)
+
+        if serializer.is_valid():
+            serializer.save()
+            return Response({
+                'status': True,
+                'message': 'User profile updated successfully',
+                'data': serializer.data
+            }, status=status.HTTP_200_OK)
+        else:
+            return Response({
+                'status': False,
+                'message': serializer.errors
+            }, status=status.HTTP_400_BAD_REQUEST)

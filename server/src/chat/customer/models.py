@@ -47,7 +47,7 @@ class ChatMessage(models.Model):
 
 class GroupChat(models.Model):
     name = models.CharField(max_length=255)
-    members = models.ManyToManyField(User, related_name='group_chats', null=True)
+    members = models.ManyToManyField(User, related_name='group_chats')
     timestamp = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
@@ -61,3 +61,13 @@ class GroupChatMessage(models.Model):
     timestamp = models.DateTimeField(auto_now_add=True)
 
 
+class Notification(models.Model):
+    sender_info = models.ForeignKey(User, on_delete=models.CASCADE, related_name='sent_notifications')
+    receiver_info = models.ForeignKey(User, on_delete=models.CASCADE, related_name='received_notifications')
+    thread = models.ForeignKey(AddedList, on_delete=models.CASCADE)
+    message = models.TextField()
+    is_received = models.BooleanField(default=False)
+    notification_created_at = models.DateTimeField(auto_now=True)
+    
+    def __str__(self):
+        return self.receiver_info.username

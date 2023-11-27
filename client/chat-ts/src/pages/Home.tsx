@@ -2,8 +2,8 @@ import { useDispatch, useSelector } from "react-redux";
 import ChatScreen from "../components/Chat/ChatScreen";
 import PersonList from "../components/Chat/PersonList";
 import { UserReducer } from "../store/store";
-import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useEffect, useRef, useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
 import { logoutUser } from "../features/auth/userSlice";
 import AddUser from "../components/Chat/AddUser";
 
@@ -33,7 +33,7 @@ function Home() {
                 <>
                     <div className="sidebar w-[30%] bg-gray-200 h-[100%] rounded-md p-4 mr-3">
                         <div className="user-info flex justify-between mb-2">
-                            <p className="text-green-600 capitalize">Welcome {username}</p>
+                            <p className="text-green-600 capitalize">Welcome <Link to="/profile">{username}</Link></p>
                             <button className="bg-black text-white text-md p-2 rounded-md" onClick={handleLogout}>
                                 Logout
                             </button>
@@ -49,7 +49,7 @@ function Home() {
                         </div>
                     </div>
                     <div className="chat-screen w-[100%] bg-white h-[100%] rounded-md p-4">
-                        <ChatScreen />
+                        <ChatScreen  />
                     </div>
 
                 </>

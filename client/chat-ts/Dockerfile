@@ -1,8 +1,13 @@
 FROM node:20.9
 
-WORKDIR /chat-frontend 
+WORKDIR /chat-frontend
+
+COPY package*.json ./
+
+RUN npm install
 
 COPY . .
 
-RUN rm -rf node_modules && npm i
+EXPOSE 5173
 
+CMD ["npm", "run", "dev"]

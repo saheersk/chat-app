@@ -154,6 +154,14 @@ CHANNEL_LAYERS = {
     },
 }
 
+#CELERY
+CELERY_BROKER_URL = (config('CELERY_BROKER_URL', default=''))
+CELERY_RESULT_BACKEND = (config('CELERY_RESULT_BACKEND', default=''))
+CELERY_ACCEPT_CONTENT = ['application/json']
+CELERY_RESULT_SERIALIZER = 'json'
+CELERY_TASK_SERIALIZER = 'json'
+CELERY_TIMEZONE = 'Asia/Kolkata'
+
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
         'rest_framework_simplejwt.authentication.JWTAuthentication',

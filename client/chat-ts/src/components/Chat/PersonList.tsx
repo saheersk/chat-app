@@ -15,7 +15,7 @@ function PersonList() {
 
     const token: string | undefined = userData?.token?.access;
 
-    const [socket, setSocket] = useState<any>(null);
+    const [ socket, setSocket ] = useState<any>(null);
 
     const [notifications, setNotifications] = useState<{ [key: number]: { notification_type: string, data: { sender_id: null | number, list_id: number | null , sender_name: string, message: string } }[] }>({});
 
@@ -44,7 +44,6 @@ function PersonList() {
                 console.log(7, parsedNotification.data.list_id, "chat");
                 console.log(chatId !== parsedNotification.data.list_id, "chat2");
                 
-
                 if(chatId !== parsedNotification.data.list_id){
                     setNotifications((prevNotifications) => ({
                         ...prevNotifications,
@@ -88,15 +87,15 @@ function PersonList() {
             .catch((err: AxiosError) => {
                 console.log(err);
             });
-    }, [userData, token, list]);
+    }, [userData, token]);
 
     const notificationCount = Object.values(notifications).reduce((count, item) => count + item.length, 0);
 
     return (
         <div className="persons-list flex justify-between flex-wrap items-center rounded-lg">
-            {list.map((member: User) => (
+            {list.map((member: User, index) => (
                 <div
-                    className="mb-2 flex justify-between items-center cursor-pointer bg-slate-300  rounded-lg w-[100%]"
+                    className="mb-2 flex justify-between items-center cursor-pointer bg-slate-300  rounded-lg w-[100%] capitalize"
                     onClick={() => handleClick(member.id, member.members.username)}
                     key={member.id}
                 >

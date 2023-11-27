@@ -4,7 +4,7 @@ import { useDispatch, useSelector } from "react-redux";
 import type { MembersReducer, UserReducer, UsersListReducer } from "../../store/store";
 import { TokenInfo } from "../../features/auth/userSlice";
 import { BASE_URL } from "../../../axiosConfig";
-import { addToUserList, type UserList } from "../../features/user/UserListSlice";
+import { addToUserList, removeFromUserList, type UserList } from "../../features/user/UserListSlice";
 import { User, updateList } from "../../features/chatList/ChatSlice";
 
 function NewUserList() {
@@ -17,7 +17,7 @@ function NewUserList() {
 
     const token: string | undefined = userData?.token?.access;
 
-    const AddNewUser = (id: number) => {
+    const addNewUser = (id: number) => {
         axios
             .post(
                 `${BASE_URL}/customer/members/`,
@@ -32,7 +32,9 @@ function NewUserList() {
                 }
             )
             .then((response: AxiosResponse) => {
-                console.log(response, "Added new response");
+                console.log(response.data.data, "Added new response");
+                dispatch(updateList(response.data.data))
+                dispatch(removeFromUserList(id));
             })
             .catch((err: AxiosError) => {
                 console.log(err);
@@ -80,7 +82,7 @@ function NewUserList() {
                         key={user.id}
                     >
                         <span className="text-blue-600">{user.username}</span>
-                        <button className="bg-red-950 text-white p-2 rounded-md" onClick={() => AddNewUser(user.id)}>
+                        <button className="bg-red-950 text-white p-2 rounded-md" onClick={() => addNewUser(user.id)}>
                             Add
                         </button>
                     </li>

@@ -25,9 +25,18 @@ const UserListSlice = createSlice({
         addToUserList: (state, action: UserActionType ) => {
             state.users = action.payload
           },
+        removeFromUserList: (state, action) => {
+            console.log(action.payload);
+            
+            const userIdToRemove = action.payload;
+
+            const newUserList = state.users.filter((user) => user.id !== userIdToRemove);
+        
+            state.users = newUserList;
+        }
     }
 });
 
-export const { addToUserList } = UserListSlice.actions;
+export const { addToUserList, removeFromUserList } = UserListSlice.actions;
 
 export default UserListSlice.reducer;

@@ -34,6 +34,20 @@ services:
     depends_on:
       - postgres_db
 
+  #Celery
+  celery:
+    restart: always
+    build: .
+    volumes:
+      - .:/chat-backend
+    command: celery -A chat worker --loglevel=info
+    container_name: celery_notification
+    depends_on:
+      - backend
+      - postgres_db 
+      - redis
+  
+
 volumes:
   backend_data:
   postgres_chat_data:

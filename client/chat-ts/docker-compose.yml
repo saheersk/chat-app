@@ -5,12 +5,8 @@ services:
     container_name: chat_frontend_container
     build:
       context: .
-      dockerfile: Dockerfile 
-    command: ['npm', 'run', 'dev']
+      dockerfile: Dockerfile
     ports:
-      - "5173:5173" 
+      - "5173:5173"
     volumes:
-      - .:/chat-frontend 
-
-volumes:
-  frontend_data:
+      - .:/chat-frontend
