@@ -1,16 +1,15 @@
 version: "3.8"
-
 services:
   redis:
       image: redis:7.2 
-      container_name: redis_app_chat_container
+      container_name: redis_chat_container
       volumes:
         - redis_chat_data:/data
 
   #Postgres Database
   postgres_db:
     image: postgres:16
-    container_name: postgres_app_container
+    container_name: postgres_container
     environment:
       POSTGRES_DB: chat_db
       POSTGRES_USER: chat_user
@@ -21,10 +20,10 @@ services:
   #Django Appication
   backend:
     build: 
-      context: ./apps/backend/chat-app
+      context: .
       dockerfile: Dockerfile
     image: backend:chat-backend
-    container_name: chat_app_backend_container
+    container_name: chat_backend_container
     command: sh -c "chmod +x /chat-backend/migrate.sh && chmod +x /chat-backend/entrypoint.sh  && sh /chat-backend/migrate.sh && /chat-backend/entrypoint.sh"
     ports:
       - 8000:8000
@@ -35,30 +34,18 @@ services:
     depends_on:
       - postgres_db
 
-  #frontend
-  frontend:
-    container_name: chat_app_frontend_container
-    build:
-      context: ./apps/frontend
-      dockerfile: Dockerfile
-    ports:
-      - "5173:5173"
-    volumes:
-      - .:/chat-frontend
-
   #Celery
-  # celery:
-  #   restart: always
-  #   build: 
-  #     context: ./apps/backend/chat-app
-  #   volumes:
-  #     - .:/chat-backend
-  #   command: celery -A chat worker --loglevel=info
-  #   container_name: celery_app_notification
-  #   depends_on:
-  #     - backend
-  #     - postgres_db 
-  #     - redis
+  celery:
+    restart: always
+    build: .
+    volumes:
+      - .:/chat-backend
+    command: celery -A chat worker --loglevel=info
+    container_name: celery_notification
+    depends_on:
+      - backend
+      - postgres_db 
+      - redis
   
 
 volumes:
