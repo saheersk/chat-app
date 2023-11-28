@@ -18,8 +18,10 @@
     "strict": true,
     "noUnusedLocals": true,
     "noUnusedParameters": true,
-    "noFallthroughCasesInSwitch": true
+    "noFallthroughCasesInSwitch": true,
+
+    "baseUrl": "./",
   },
-  "include": ["src", "custom.d.ts" ],
+  "include": ["src", "custom.d.ts", "node_modules/react-websocket"],
   "references": [{ "path": "./tsconfig.node.json" }]
 }
